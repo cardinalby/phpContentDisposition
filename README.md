@@ -9,7 +9,7 @@ Requires **PHP 5.6** or newer.
 ## Installation
 
 ```sh
-$ composer require
+composer require cardinalby/content-disposition 
 ```
 
 ## Content-Disposition header

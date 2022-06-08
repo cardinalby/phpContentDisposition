@@ -1,5 +1,6 @@
 {
     "name": "cardinalby/content-disposition",
+    "version": "1.0.0",
     "type": "library",
     "license": "MIT",
     "authors": [
