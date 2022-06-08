@@ -1,3 +1,6 @@
+[![Test Suite](https://github.com/cardinalby/phpContentDisposition/actions/workflows/test.yml/badge.svg)](https://github.com/cardinalby/phpContentDisposition/actions/workflows/test.yml)
+
+
 PHP class for handling (parsing and formatting) a value of  HTTP 
 [`Content-Disposition`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) header. 
 
