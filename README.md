@@ -1,5 +1,9 @@
 [![Test Suite](https://github.com/cardinalby/phpContentDisposition/actions/workflows/test.yml/badge.svg)](https://github.com/cardinalby/phpContentDisposition/actions/workflows/test.yml)
-
+[![Latest Stable Version](http://poser.pugx.org/cardinalby/content-disposition/v)](https://packagist.org/packages/cardinalby/content-disposition)
+[![Total Downloads](http://poser.pugx.org/cardinalby/content-disposition/downloads)](https://packagist.org/packages/cardinalby/content-disposition) 
+[![Latest Unstable Version](http://poser.pugx.org/cardinalby/content-disposition/v/unstable)](https://packagist.org/packages/cardinalby/content-disposition) 
+[![License](http://poser.pugx.org/cardinalby/content-disposition/license)](https://packagist.org/packages/cardinalby/content-disposition) 
+[![PHP Version Require](http://poser.pugx.org/cardinalby/content-disposition/require/php)](https://packagist.org/packages/cardinalby/content-disposition)
 
 PHP class for handling (parsing and formatting) a value of  HTTP 
 [`Content-Disposition`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) header. 
