@@ -10,6 +10,7 @@ class ContentDisposition
     const TYPE_ATTACHMENT = 'attachment';
     const TYPE_INLINE = 'inline';
 
+    private static $HEADER_NAME = 'Content-Disposition';
     private static $FILENAME_PARAM = 'filename';
     private static $FILENAME_EXT_PARAM = 'filename*';
 
@@ -145,7 +146,7 @@ class ContentDisposition
 
     /**
      * @param string|null $filename
-     * @param string|bool $fallback
+     * @param string|bool|null $fallback
      * @return array
      */
     private static function createParams($filename, $fallback = true)
@@ -156,8 +157,8 @@ class ContentDisposition
         if (!is_string($filename)) {
             throw new InvalidArgumentException('filename must be a string');
         }
-        if (!is_string($fallback) && !is_bool($fallback)) {
-            throw new InvalidArgumentException('fallback must be a string or boolean');
+        if (!is_string($fallback) && !is_bool($fallback) && !is_null($fallback)) {
+            throw new InvalidArgumentException('fallback must be string, boolean or null');
         }
 
         if (is_string($fallback) && preg_match(self::$NON_LATIN1_REGEXP, $fallback)) {
@@ -183,12 +184,16 @@ class ContentDisposition
         $params = [];
 
         // set extended filename parameter
-        if ($hasFallback || !$canPutIntoQuotedString || preg_match(self::$HEX_ESCAPE_REGEXP, $name)) {
+        if ($hasFallback ||
+            $fallback === null ||
+            !$canPutIntoQuotedString ||
+            preg_match(self::$HEX_ESCAPE_REGEXP, $name)
+        ) {
             $params[self::$FILENAME_EXT_PARAM] = $name;
         }
 
         // set filename parameter
-        if ($canPutIntoQuotedString || $hasFallback) {
+        if ($fallback !== null && ($canPutIntoQuotedString || $hasFallback)) {
             $params[self::$FILENAME_PARAM] = $hasFallback ? $fallbackName : $name;
         }
 
@@ -214,7 +219,7 @@ class ContentDisposition
 
         switch ($charset) {
             case 'iso-8859-1':
-                return self::getLatin1(utf8_encode($decoded));
+                return self::getLatin1(self::utf8encode($decoded));
             case 'utf-8':
             case 'utf8':
                 return $decoded;
@@ -224,10 +229,21 @@ class ContentDisposition
     }
 
     /**
+     * @param string $str ISO-8859-1 str
+     * @return string
+     */
+    private static function utf8encode($str) {
+        if (extension_loaded('mbstring')) {
+            return mb_convert_encoding($str, 'UTF-8', 'ISO-8859-1');
+        }
+        return utf8_encode($str);
+    }
+
+    /**
      * @param string|null $fileName File name, can contain Unicode symbols. Pass `null` to omit `filename` param.
      *                              Depending on the symbols present in the string, value will be placed to
      *                              `filename` or `filename*` param.
-     * @param string|boolean $fallback fallback ISO-8859-1 file name, will be placed to `filename` param if
+     * @param string|boolean|null $fallback fallback ISO-8859-1 file name, will be placed to `filename` param if
      *                                 differs from $filename
      * @param string $type 'attachment' (default) or 'inline' type of the download
      *
@@ -250,7 +266,7 @@ class ContentDisposition
      * @param string|null $fileName File name, can contain Unicode symbols. Pass `null` to omit `filename` param.
      *                              Depending on the symbols present in the string, value will be placed to
      *                              `filename` or `filename*` param.
-     * @param string|boolean $fallback fallback ISO-8859-1 file name, will be placed to `filename` param if
+     * @param string|boolean|null $fallback fallback ISO-8859-1 file name, will be placed to `filename` param if
      *                                 differs from $filename
      * @return ContentDisposition
      * @throws InvalidArgumentException
@@ -265,7 +281,7 @@ class ContentDisposition
      * @param string|null $fileName File name, can contain Unicode symbols. Pass `null` to omit `filename` param.
      *                              Depending on the symbols present in the string, value will be placed to
      *                              `filename` or `filename*` param.
-     * @param string|boolean $fallback fallback ISO-8859-1 file name, will be placed to `filename` param if
+     * @param string|boolean|null $fallback fallback ISO-8859-1 file name, will be placed to `filename` param if
      *                                 differs from $filename
      * @return ContentDisposition
      * @throws InvalidArgumentException
@@ -298,7 +314,7 @@ class ContentDisposition
 
         // calculate index to start at
         if (substr($matches[0], -1, 1) === ';') {
-            $offset -= 1;
+            --$offset;
         }
 
         // match parameters
@@ -372,6 +388,13 @@ class ContentDisposition
     /**
      * @return string
      */
+    public function formatHeaderLine() {
+        return sprintf("%s: %s", self::$HEADER_NAME, $this->format());
+    }
+
+    /**
+     * @return string
+     */
     public function getType() {
         return $this->type;
     }
@@ -389,7 +412,7 @@ class ContentDisposition
     public function getCustomParameters() {
         return array_filter(
             $this->parameters,
-            function ($key) {
+            static function ($key) {
                 return $key !== self::$FILENAME_PARAM && $key !== self::$FILENAME_EXT_PARAM;
             },
             ARRAY_FILTER_USE_KEY

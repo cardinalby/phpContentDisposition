@@ -62,6 +62,14 @@ class ContentDispositionTest extends TestCase
         );
     }
 
+    public function testForceExtFilenameOnly() {
+        $this->assertEquals(
+            "Content-Disposition: attachment; filename*=UTF-8''%C3%98.txt",
+            ContentDisposition::createAttachment("Ø.txt", null)->formatHeaderLine(),
+            'should encode special characters'
+        );
+    }
+
     public function testCreateWithFilenameIsUnicode() {
         // when "filename" is Unicode
         $this->assertEquals(

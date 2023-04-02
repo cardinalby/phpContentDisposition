@@ -38,7 +38,10 @@ public static function create(
 )
 ```
 #### 🔸 `$fileName`
-File name, can contain Unicode symbols. Pass `null` to omit `filename` param. Depending on the symbols present in the string, value will be placed to `filename` or `filename*` param.
+File name, can contain Unicode symbols. Depending on the symbols present in the string, value will be placed to 
+`filename` or `filename*` param.
+
+Pass `null` to omit `filename` param.
 
 #### 🔸 `$fallback`
 If the `$filename` argument is outside ISO-8859-1, then the file name is actually
@@ -46,17 +49,17 @@ stored in a supplemental `filename*` field for clients that support Unicode file
 a ISO-8859-1 version of the file name is automatically generated.
 
 This specifies the ISO-8859-1 file name to override the automatic generation or
-disables the generation all together, defaults to `true`.
+disables the generation at all.
 
-- A string will specify the ISO-8859-1 file name to use in place of automatic
-  generation.
+- `true` (_default_) will enable automatic generation if the file name is outside ISO-8859-1. 
+Replaces non-ISO-8859-1 characters with '?' character.
+- A **string** will specify the ISO-8859-1 file name to use in place of automatic
+  generation. If it differs from `$filename`, then `$filename` option is encoded in the extended 
+  field and `$fallback` set as the fallback field, even though they are both ISO-8859-1
 - `false` will disable including a ISO-8859-1 file name and only include the
   Unicode version (unless the file name is already ISO-8859-1).
-- `true` will enable automatic generation if the file name is outside ISO-8859-1.
-
-If the `$filename` argument is ISO-8859-1 and this option is specified and has a
-different value, then the `$filename` option is encoded in the extended field
-and this set as the fallback field, even though they are both ISO-8859-1.
+- `null` will strictly disable including a ISO-8859-1 file name and only include the
+  Unicode version even if file name is already ISO-8859-1.
 
 #### 🔸 `$type`
 Specifies the disposition type, defaults to `"attachment"`. This can also be
@@ -71,12 +74,14 @@ A shortcut for `ContentDisposition::create($filename, $fallback, 'attachment')`;
 A shortcut for `ContentDisposition::create($filename, $fallback, 'inline')`;
 
 ### 🔻 `format()`
-Generates the header string value. 
-
+Generates the header string value (without header name).
 ```php
 $v = ContentDisposition::create('£ and € rates.pdf')->format();
 // 'attachment; filename="£ and ? rates.pdf"; filename*=UTF-8\'\'%C2%A3%20and%20%E2%82%AC%20rates.pdf'
 ```
+
+### 🔻 `formatHeaderLine()`
+Generates the full header line: `Content-Disposition: ...`, where `...` equals `format()` result.
 
 ### 🔻 static `parse()`
 Parses a `Content-Disposition` header string and returns `ContentDisposition` object.
