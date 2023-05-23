@@ -6,7 +6,7 @@
     "authors": [
         {
             "name": "Cardinal",
-            "homepage": "https://github.com/cardinalby"
+            "homepage": "https://github.com/cardinalby/phpContentDisposition"
         }
     ],
     "require": {
@@ -24,5 +24,14 @@
         "psr-0": {
             "cardinalby\\ContentDisposition\\Tests\\": "tests"
         }
+    },
+    "archive": {
+        "exclude": [
+            "/.github",
+            "/tests",
+            "/.gitattributes",
+            "/.gitignore",
+            "/phpunit.xml"
+        ]
     }
 }
